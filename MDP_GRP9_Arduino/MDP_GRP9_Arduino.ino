@@ -176,7 +176,7 @@ void readExploreCommands(char func) {
         //delay(1000);
       }
     case 'G':
-      while(true) {
+      //while(true) {
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(1))); Serial.print("<-- FL | ");
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(2))); Serial.print("<-- FC | ");
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(3))); Serial.print("<-- FR | ");
@@ -184,7 +184,7 @@ void readExploreCommands(char func) {
         Serial.print(getLongSensorString(aggregateContinuousLongSensorGrids(5))); Serial.print("<-- LL | ");
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(6))); Serial.print("<-- RS\n");
         //delay(1000);
-      }
+      //}
       break;
     default:
       Serial.print("5" + getSensorReadings() + "\n");  
@@ -651,14 +651,14 @@ String averageFrontErrorDiscreteReadings(){
   int FLarr[] = {0,0,0,0};
   int FCarr[] = {0,0,0,0};
   int FRarr[] = {0,0,0,0};
-  int FLread[NUM_SAMPLES];
-  int FCread[NUM_SAMPLES];
-  int FRread[NUM_SAMPLES];
+  int FLread[NUM_SAMPLES] = {};
+  int FCread[NUM_SAMPLES] = {};
+  int FRread[NUM_SAMPLES] = {};
   int frontAverageError = 0;
   double frontLeft, frontCenter, frontRight = 0;
   int count = 0;
-  double measurement;
-  double modmeasurement;
+  double measurement = 0;
+  double modmeasurement = 0;
   for(int i = 0; i < NUM_SAMPLES; i++){
     measurement = getDistance(FRONT_LEFT_SENSOR);
     if(measurement < 90){
@@ -730,7 +730,7 @@ String averageFrontErrorDiscreteReadings(){
 String averageFrontErrorReadings(){
   double frontAverageError = 0;
   int count = 0;
-  double measurement;
+  double measurement = 0;
   for(int i = 0; i < NUM_SAMPLES; i++){
     measurement = getDistance(FRONT_LEFT_SENSOR);
     if(measurement < 90){
@@ -807,7 +807,7 @@ void calSensors(float error) {
 }
 
 void calAngle(float MIN_DISTANCE_CALIBRATE) {
-  float leftToWallDistance, rightToWallDistance;
+  float leftToWallDistance, rightToWallDistance = 0;
   int count = 0;
   float error;
   float forward = 0;

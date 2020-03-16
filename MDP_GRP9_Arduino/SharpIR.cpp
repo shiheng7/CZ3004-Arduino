@@ -84,18 +84,15 @@ void SharpIR::sort(double a[], int size) {
 // Read distance and compute it
 double SharpIR::distance() {
 
-    double ir_val[NB_SAMPLE];
+    double ir_val[NB_SAMPLE] = {};
     double distanceCM;
-
 
     for (int i=0; i<NB_SAMPLE; i++){
         // Read analog value
         ir_val[i] = analogRead(_irPin);
     }
     
-    // Sort it 
-    //sort(ir_val,NB_SAMPLE);
-    
+    // Use median of medians to get approximate value
     if (_model==1080) {
         
         // Different expressions required as the Photon has 12 bit ADCs vs 10 bit for Arduinos
