@@ -657,8 +657,6 @@ String averageFrontErrorDiscreteReadings(){
   int count = 0;
   double measurement;
   for(int i = 0; i < 10; i++){
-    count = 0;
-    frontAverageError = 0;
     measurement = getDistance(FRONT_LEFT_SENSOR);
     if(measurement < 90){
       frontAverageError += fmod(measurement, 10) < 5? fmod(measurement, 10):fmod(measurement, 10)-10;
@@ -674,7 +672,9 @@ String averageFrontErrorDiscreteReadings(){
       frontAverageError += fmod(measurement, 10) < 5? fmod(measurement, 10):fmod(measurement, 10)-10;
       count += 1;
     }
-    frontAverageError /= count;
+  }
+  frontAverageError /= count;
+  for(int i = 0; i < 10; i++){
     frontLeft = fmod(getDistance(FRONT_LEFT_SENSOR),10) < 5?
     (((int)getDistance(FRONT_LEFT_SENSOR)) / 10 * 10) + frontAverageError:
     (((int)getDistance(FRONT_LEFT_SENSOR)) / 10 * 10) + 10 + frontAverageError;
