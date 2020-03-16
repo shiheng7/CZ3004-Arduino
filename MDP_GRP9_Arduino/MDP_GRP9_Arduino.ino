@@ -50,7 +50,7 @@ float kp_ML = 0.107;
 float ki_ML = 0.340;
 float kd_ML = 0.014;
 double setpoint = 80;
-double setpoint_RT = 60;
+double setpoint_RT = 80;
 
 float MIN_DISTANCE_CALIBRATE = 8.9;
 float ANGLE_CALIBRATION_THRESHOLD = 0.05;
@@ -159,7 +159,6 @@ void readExploreCommands(char func) {
       Serial.print("5" + getSensorReadings() + "\n");  
       restartPID();
       break;
-    /*
     case 'S':
       while(true) {
         Serial.print(getDistance(FRONT_LEFT_SENSOR)); Serial.print("<-- FL | ");
@@ -192,7 +191,6 @@ void readExploreCommands(char func) {
         //delay(1000);
       }
       break;
-    */
     default:
       Serial.print("5" + getSensorReadings() + "\n");  
       break;
@@ -303,7 +301,7 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 11000; 
+  long distance = grids * 10000; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -338,7 +336,7 @@ void goBackInGrids(long grids) {
 }
 
 void rotateLeft() {
-  long limit = 14450;
+  long limit = 13500;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -357,7 +355,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 14500;
+  long limit = 13500;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -365,7 +363,7 @@ void rotateRight() {
       break;
     }
     else {
-      pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint);
+      pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint_RT);
       md.setSpeeds(-pidOutput_MR * 150, -pidOutput_ML * 150);
       delayMicroseconds(5000);
       //Serial.print(input_MR); Serial.print(", R  ||  ");
