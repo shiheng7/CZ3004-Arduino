@@ -14,7 +14,7 @@
 #ifndef SharpIR_h
 #define SharpIR_h
 
-#define NB_SAMPLE 31
+#define NB_SAMPLE 30
 
 #ifdef ARDUINO
   #include "Arduino.h"
@@ -36,6 +36,8 @@ class SharpIR
     
     int _irPin;
     int _model;
+    void partialSort(double a[], int min, int max);
+    double medianOfMedians(double a[], int size);
 };
 
 #endif
