@@ -43,10 +43,10 @@ double prev_prev_error_MR = 0, prev_prev_error_ML = 0;
 double total_Dis = 0;
 
 // ==============================   User Input Variables  ==============================
-float kp_MR = 0.097;
+float kp_MR = 0.115;
 float ki_MR = 0.420;
 float kd_MR = 0.014;
-float kp_ML = 0.107;
+float kp_ML = 0.081;
 float ki_ML = 0.340;
 float kd_ML = 0.014;
 double setpoint = 80;
@@ -296,7 +296,7 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 10400; 
+  long distance = grids * 10600; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -314,7 +314,7 @@ void goStraightInGrids(long grids) {
 
 // new shit
 void goBackInGrids(long grids) {
-  long distance = grids * 10150; 
+  long distance = grids * 10600; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -331,7 +331,7 @@ void goBackInGrids(long grids) {
 }
 
 void rotateLeft() {
-  long limit = 14000;
+  long limit = 13850;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -350,7 +350,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 14000;
+  long limit = 13850;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
