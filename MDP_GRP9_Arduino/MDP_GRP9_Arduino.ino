@@ -44,10 +44,10 @@ double total_Dis = 0;
 
 // ==============================   User Input Variables  ==============================
 float kp_MR = 0.115;
-float ki_MR = 0.420;
-float kd_MR = 0.014;
-float kp_ML = 0.081;
-float ki_ML = 0.340;
+float ki_MR = 0.380;
+float kd_MR = 0.160;
+float kp_ML = 0.110;
+float ki_ML = 0.380;
 float kd_ML = 0.014;
 double setpoint = 80;
 double setpoint_RT = 80;
@@ -296,14 +296,13 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 10600; 
+  long distance = grids * 10550; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
       md.setBrakes(400, 400);
       break;
-    }
-    else {
+    }else {
       moveForward();
       //Serial.print(input_MR); Serial.print(", R  ||  ");
       //Serial.print(input_ML); Serial.print(", L\n");
@@ -314,14 +313,13 @@ void goStraightInGrids(long grids) {
 
 // new shit
 void goBackInGrids(long grids) {
-  long distance = grids * 10600; 
+  long distance = grids * 10500; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
       md.setBrakes(400, 400);
       break;
-    }
-    else {
+    }else {
       moveBackward();
       //Serial.print(input_MR); Serial.print(", R  ||  ");
       //Serial.print(input_ML); Serial.print(", L\n");
@@ -350,7 +348,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 13850;
+  long limit = 13875;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -439,9 +437,21 @@ void moveForward() {
   delayMicroseconds(5000);
 }
 
+void moveForwardSlow() {
+  pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint / 2);
+  md.setSpeeds(pidOutput_MR * 150, -pidOutput_ML * 150);
+  delayMicroseconds(5000);
+}
+
 // new shit
 void moveBackward() {
   pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint);
+  md.setSpeeds(-pidOutput_MR * 150, pidOutput_ML * 150);
+  delayMicroseconds(5000);
+}
+
+void moveBackwardSlow() {
+  pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint / 2);
   md.setSpeeds(-pidOutput_MR * 150, pidOutput_ML * 150);
   delayMicroseconds(5000);
 }
@@ -921,168 +931,3 @@ void calibrate(float MIN_DISTANCE_CALIBRATE) {
   delay(10);
   calAngle(MIN_DISTANCE_CALIBRATE);
 }
-
-// ==============================   Miscellaneous/Obsolete/Testing Functions  ==============================
-  /*
-  switch(packet) {
-    case '0':
-      restartPID();
-      while(true) {
-        moveForward();
-        Serial.print(input_MR); Serial.print(", R  ||  ");
-        Serial.print(input_ML); Serial.print(", L\n");
-      }
-      break; 
-    case '1':
-      goStraightInGrids(1);
-      restartPID();
-      break;
-    case '2':
-      goStraightInGrids(2);
-      restartPID();
-      break;
-    case 's':
-      while(true) {
-        Serial.print(getDistance(1)); Serial.print("<-- FL | ");
-        Serial.print(getDistance(2)); Serial.print("<-- FC | ");
-        Serial.print(getDistance(3)); Serial.print("<-- FR | ");
-        Serial.print(getDistance(4)); Serial.print("<-- LS | ");
-        Serial.print(getDistance(5)); Serial.print("<-- LL | ");
-        Serial.print(getDistance(6)); Serial.print("<-- RS\n");
-        //delay(500);
-      }
-      break;
-    case 'g':
-      while(true) {
-        Serial.print(getDistanceInGrids(1)); Serial.print("<-- FL | ");
-        Serial.print(getDistanceInGrids(2)); Serial.print("<-- FC | ");
-        Serial.print(getDistanceInGrids(3)); Serial.print("<-- FR | ");
-        Serial.print(getDistanceInGrids(4)); Serial.print("<-- LS | ");
-        Serial.print(getDistanceInGrids(5)); Serial.print("<-- LL | ");
-        Serial.print(getDistanceInGrids(6)); Serial.print("<-- RS\n");
-        //delay(1000);
-      }
-      break;
-    case 'l':
-      rotateLeft(1);
-      restartPID();
-      break;
-    case 'r':
-      rotateRight(1);
-      restartPID();
-      break;
-    case 'q':
-      while(true) {
-        Serial.print(sr1.distance()); Serial.print("<-- FL | ");
-        Serial.print(sr2.distance()); Serial.print("<-- FC | ");
-        Serial.print(sr3.distance()); Serial.print("<-- FR | ");
-        Serial.print(sr4.distance()); Serial.print("<-- LS | ");
-        Serial.print(lr5.distance()); Serial.print("<-- LL | ");
-        Serial.print(sr6.distance()); Serial.print("<-- RS\n");
-        //delay(1000);
-      }
-    case 'e':
-      restartPID();
-      explore();
-      break;
-    case 'f':
-      restartPID();
-      explore2();
-      break;
-    case 'c':
-      calibrate(MIN_DISTANCE_CALIBRATE);
-      delay(150);
-      break;
-    default:
-      break;  
-  }*/
-
-/*
-void explore() {
-  for(int i = 0; i < 500; i++) {
-    moveForward();
-    Serial.print(i); Serial.print("\n");
-    //Serial.print(input_MR); Serial.print(", R  ||  ");
-    //Serial.print(input_ML); Serial.print(", L  ||  ");
-    //Serial.print(getDistanceInGrids(1)); Serial.print("<-- FL | ");
-    //Serial.print(getDistanceInGrids(2)); Serial.print("<-- FC | ");
-    //Serial.print(getDistanceInGrids(3)); Serial.print("<-- FR\n");
-  }
-
-  while(true) {
-    moveForward();
-    if((getDistanceInGrids(1) == "1") || (getDistanceInGrids(2) == "1") || (getDistanceInGrids(3) == "1")) {
-      md.setBrakes(400, 400);
-      delay(500);
-      rotateLeft(1);        
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateRight(1);       
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(4); 
-      delay(500);
-      rotateRight(1);
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateLeft(1);        restartPID();
-      delay(1000);
-      break;     
-    }
-  }
-
-  goStraightInGrids(2);
-  restartPID();
-}
-
-void explore2() {
-  for(int i = 0; i < 500; i++) {
-    moveForward();
-    Serial.print(i); Serial.print("\n");
-    //Serial.print(input_MR); Serial.print(", R  ||  ");
-    //Serial.print(input_ML); Serial.print(", L  ||  ");
-    //Serial.print(getDistanceInGrids(1)); Serial.print("<-- FL | ");
-    //Serial.print(getDistanceInGrids(2)); Serial.print("<-- FC | ");
-    //Serial.print(getDistanceInGrids(3)); Serial.print("<-- FR\n");
-  }
-
-  while(true) {
-    moveForward();
-    if((getDistanceInGrids(1) == "2") || (getDistanceInGrids(2) == "2") || (getDistanceInGrids(3) == "2")) {
-      md.setBrakes(400, 400);
-      delay(500);
-      rotateLeft(0.5);        
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateRight(0.5);       
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(4); 
-      delay(500);
-      rotateRight(0.5);
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateLeft(0.5);        restartPID();
-      delay(1000);
-      break;     
-    }
-  }
-
-  goStraightInGrids(2);
-  restartPID();
-}
-*/
