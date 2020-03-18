@@ -43,11 +43,11 @@ double prev_prev_error_MR = 0, prev_prev_error_ML = 0;
 double total_Dis = 0;
 
 // ==============================   User Input Variables  ==============================
-float kp_MR = 0.097;
-float ki_MR = 0.420;
-float kd_MR = 0.014;
-float kp_ML = 0.107;
-float ki_ML = 0.340;
+float kp_MR = 0.115;
+float ki_MR = 0.380;
+float kd_MR = 0.160;
+float kp_ML = 0.110;
+float ki_ML = 0.380;
 float kd_ML = 0.014;
 double setpoint = 80;
 double setpoint_RT = 80;
@@ -61,13 +61,14 @@ const int AVERAGE_FRONT = 0;
 const int AVERAGE_READINGS = 1;
 const int AVERAGE_DISCRETE = 2;
 const int AVERAGE_FRONT_DISCRETE = 3;
-int SENSOR_READING_TYPE = AVERAGE_FRONT;
+int SENSOR_READING_TYPE = AVERAGE_FRONT_DISCRETE;
 const int FRONT_LEFT_SENSOR = 1;
 const int FRONT_MIDDLE_SENSOR = 2;
 const int FRONT_RIGHT_SENSOR = 3;
 const int LEFT_SHORT_SENSOR = 4;
 const int LEFT_LONG_SENSOR = 5;
 const int RIGHT_SHORT_SENSOR = 6;
+const int NUM_SAMPLES = 10;
 
 // ==============================   Setup   ==============================
 void setup() {
@@ -115,47 +116,41 @@ void readExploreCommands(char func) {
   switch(func) {
     case 'L':
       rotateLeft();
-      if(getShortSensorString(aggregateContinuousShortSensorGrids(1)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(2)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(3)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
+//      if(getShortSensorString(aggregateDiscreteShortSensorGrids(1)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
+//      else if(getShortSensorString(aggregateDiscreteShortSensorGrids(2)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
+//      else if(getShortSensorString(aggregateDiscreteShortSensorGrids(3)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
       Serial.print("5" + getSensorReadings() + "\n");
       delay(125);
       restartPID();  
       break;
     case 'R':
       rotateRight();
-      if(getShortSensorString(aggregateContinuousShortSensorGrids(1)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(2)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(3)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
+//      if(getShortSensorString(aggregateDiscreteShortSensorGrids(1)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
+//      else if(getShortSensorString(aggregateDiscreteShortSensorGrids(2)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
+//      else if(getShortSensorString(aggregateDiscreteShortSensorGrids(3)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
       Serial.print("5" + getSensorReadings() + "\n");  
       delay(125);
       restartPID();
       break;
     case 'M':
       goStraightInGrids(1);
-      if(getShortSensorString(aggregateContinuousShortSensorGrids(1)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(2)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(3)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
+//      if(getShortSensorString(aggregateDiscreteShortSensorGrids(1)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
+//      else if(getShortSensorString(aggregateDiscreteShortSensorGrids(2)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
+//      else if(getShortSensorString(aggregateDiscreteShortSensorGrids(3)) == "0")
+//        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
       Serial.print("5" + getSensorReadings() + "\n");  
       restartPID();
       break;
     case 'B':
       goBackInGrids(1);
-      if(getShortSensorString(aggregateContinuousShortSensorGrids(1)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 1);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(2)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 2);
-      else if(getShortSensorString(aggregateContinuousShortSensorGrids(3)) == "0")
-        calDistanceFront(MIN_DISTANCE_CALIBRATE, 3);
       Serial.print("5" + getSensorReadings() + "\n");  
       restartPID();
       break;
@@ -181,7 +176,7 @@ void readExploreCommands(char func) {
         //delay(1000);
       }
     case 'G':
-      while(true) {
+      //while(true) {
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(1))); Serial.print("<-- FL | ");
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(2))); Serial.print("<-- FC | ");
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(3))); Serial.print("<-- FR | ");
@@ -189,7 +184,7 @@ void readExploreCommands(char func) {
         Serial.print(getLongSensorString(aggregateContinuousLongSensorGrids(5))); Serial.print("<-- LL | ");
         Serial.print(getShortSensorString(aggregateContinuousShortSensorGrids(6))); Serial.print("<-- RS\n");
         //delay(1000);
-      }
+      //}
       break;
     default:
       Serial.print("5" + getSensorReadings() + "\n");  
@@ -301,14 +296,13 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 10000; 
+  long distance = grids * 10550; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
       md.setBrakes(400, 400);
       break;
-    }
-    else {
+    }else {
       moveForward();
       //Serial.print(input_MR); Serial.print(", R  ||  ");
       //Serial.print(input_ML); Serial.print(", L\n");
@@ -319,14 +313,13 @@ void goStraightInGrids(long grids) {
 
 // new shit
 void goBackInGrids(long grids) {
-  long distance = grids * 10150; 
+  long distance = grids * 10500; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
       md.setBrakes(400, 400);
       break;
-    }
-    else {
+    }else {
       moveBackward();
       //Serial.print(input_MR); Serial.print(", R  ||  ");
       //Serial.print(input_ML); Serial.print(", L\n");
@@ -336,7 +329,7 @@ void goBackInGrids(long grids) {
 }
 
 void rotateLeft() {
-  long limit = 13500;
+  long limit = 13850;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -355,7 +348,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 13500;
+  long limit = 13875;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -444,6 +437,12 @@ void moveForward() {
   delayMicroseconds(5000);
 }
 
+void moveForwardSlow() {
+  pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint / 2);
+  md.setSpeeds(pidOutput_MR * 150, -pidOutput_ML * 150);
+  delayMicroseconds(5000);
+}
+
 // new shit
 void moveBackward() {
   pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint);
@@ -451,89 +450,101 @@ void moveBackward() {
   delayMicroseconds(5000);
 }
 
+void moveBackwardSlow() {
+  pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint / 2);
+  md.setSpeeds(-pidOutput_MR * 150, pidOutput_ML * 150);
+  delayMicroseconds(5000);
+}
+
 // ==============================   Sensor Functions  ==============================
 double getDistance(int sensor) {
-  if(sensor == 1) {
-    double sd1 = sr1.distance();
-    if(sd1 >= 0 && sd1 < 10)  return sd1;
-    if(sd1 >= 10 && sd1 < 12)  return sd1 + 0.20;
-    if(sd1 >= 12 && sd1 < 14)  return sd1 - 0.10;
-    if(sd1 >= 14 && sd1 < 16)  return sd1 - 0.10;
-    if(sd1 >= 16 && sd1 < 18)  return sd1 - 0.60;
-    if(sd1 >= 18 && sd1 < 20)  return sd1 - 0.80;
-    if(sd1 >= 20 && sd1 < 22.5)  return sd1 - 1.20;
-    if(sd1 >= 22.5 && sd1 < 25)  return sd1 - 1.40;
-    if(sd1 >= 25 && sd1 < 30)  return sd1 - 2.20;
-    if(sd1 >= 30 && sd1 < 35)  return sd1 - 3.50;
-    if(sd1 >= 35 && sd1 < 37)  return sd1 - 4.00; //accurate up to 30cm
-    if(sd1 >= 37) return 99.99;
+  double sval;
+  switch(sensor){
+    case 1:
+      sval = sr1.distance();
+      if(sval >= 0 && sval < 10)  return sval;
+      if(sval >= 10 && sval < 12)  return sval + 0.20;
+      if(sval >= 12 && sval < 14)  return sval - 0.10;
+      if(sval >= 14 && sval < 16)  return sval - 0.10;
+      if(sval >= 16 && sval < 18)  return sval - 0.60;
+      if(sval >= 18 && sval < 20)  return sval - 0.80;
+      if(sval >= 20 && sval < 22.5)  return sval - 1.20;
+      if(sval >= 22.5 && sval < 25)  return sval - 1.40;
+      if(sval >= 25 && sval < 30)  return sval - 2.20;
+      if(sval >= 30 && sval < 35)  return sval - 3.50;
+      if(sval >= 35 && sval < 37)  return sval - 4.00; //accurate up to 30cm
+      if(sval >= 37) return 99.99;
+      break;
+    case 2:
+      sval = sr2.distance();
+      if(sval >= 0 && sval < 10)  return sval;
+      if(sval >= 10 && sval < 12)  return sval + 1.00;
+      if(sval >= 12 && sval < 14)  return sval + 1.60;
+      if(sval >= 14 && sval < 16)  return sval + 1.70;
+      if(sval >= 16 && sval < 18)  return sval + 2.30;
+      if(sval >= 18 && sval < 20)  return sval + 2.80;
+      if(sval >= 20 && sval < 22.5)  return sval + 4.90;
+      if(sval >= 22.5 && sval < 24)  return sval + 5.50;
+      if(sval >= 24)return 99.99;
+      break;
+    case 3:
+      sval = sr3.distance();
+      if(sval >= 0 && sval < 10)  return sval - 0.20;
+      if(sval >= 10 && sval < 12)  return sval - 0.40;
+      if(sval >= 12 && sval < 14)  return sval - 0.90;
+      if(sval >= 14 && sval < 16)  return sval - 0.90;
+      if(sval >= 16 && sval < 18)  return sval - 1.10;
+      if(sval >= 18 && sval < 20)  return sval - 1.80;
+      if(sval >= 20 && sval < 22.5)  return sval - 1.80;
+      if(sval >= 22.5 && sval < 25)  return sval - 1.80;
+      if(sval >= 25 && sval < 30)  return sval - 2.00;
+      if(sval >= 30 && sval < 35)  return sval - 2.30;
+      if(sval >= 35)  return 99.99; //accurate up to 30cm
+      break;
+    case 4:
+      sval = sr4.distance();
+      if(sval >= 0 && sval < 10) return sval + 0.50;
+      if(sval >= 10 && sval < 12)  return sval + 0.40;
+      if(sval >= 12 && sval < 14)  return sval + 0.40;
+      if(sval >= 14 && sval < 16)  return sval + 0.30;
+      if(sval >= 16 && sval < 18)  return sval + 0.10;
+      if(sval >= 18 && sval < 20)  return sval + 0.05; 
+      if(sval >= 20 && sval < 25)  return sval + 0.05;
+      if(sval >= 25 && sval < 30)  return sval + 0.05;
+      if(sval >= 30) return 99.99;
+      break;
+    case 5:
+      sval = lr5.distance();
+      if(sval >= 0 && sval < 19) return 0;
+      if(sval >= 19 && sval < 22)  return sval + 1.00;
+      if(sval >= 22 && sval < 24)  return sval + 2.43;
+      if(sval >= 24 && sval < 26)  return sval + 3.03;
+      if(sval >= 26 && sval < 28)  return sval + 3.54;
+      if(sval >= 28 && sval < 30)  return sval + 4.00;
+      if(sval >= 30 && sval < 35)  return sval + 4.50;
+      if(sval >= 35 && sval < 40)  return sval + 4.00;
+      if(sval >= 40 && sval < 45)  return sval + 5.00;
+      if(sval >= 45 && sval < 50)  return sval + 3.30; 
+      if(sval >= 50 && sval < 55)  return sval + 4.30; 
+      if(sval >= 55 && sval < 60)  return sval + 4.30; //accurate up to 60cm
+      if(sval >= 60)  return 99.99;
+      break;
+    case 6:
+      sval = sr6.distance();
+      if(sval >= 0 && sval < 10) return sval;
+      if(sval >= 10 && sval < 12)  return sval + 0.00;
+      if(sval >= 12 && sval < 14)  return sval + 0.00;
+      if(sval >= 14 && sval < 16)  return sval - 0.30;
+      if(sval >= 16 && sval < 18)  return sval - 0.60;
+      if(sval >= 18 && sval < 20)  return sval - 1.00; 
+      if(sval >= 20 && sval < 25)  return sval - 1.20; 
+      if(sval >= 25 && sval < 30)  return sval - 1.80; 
+      if(sval >= 30) return 99.99;
+      break;
+    default:
+      return 99.99;
   }
-  if(sensor == 2) {
-    double sd2 = sr2.distance();
-    if(sd2 >= 0 && sd2 < 10)  return sd2;
-    if(sd2 >= 10 && sd2 < 12)  return sd2 + 1.00;
-    if(sd2 >= 12 && sd2 < 14)  return sd2 + 1.60;
-    if(sd2 >= 14 && sd2 < 16)  return sd2 + 1.70;
-    if(sd2 >= 16 && sd2 < 18)  return sd2 + 2.30;
-    if(sd2 >= 18 && sd2 < 20)  return sd2 + 2.80;
-    if(sd2 >= 20 && sd2 < 22.5)  return sd2 + 4.90;
-    if(sd2 >= 22.5 && sd2 < 24)  return sd2 + 5.50;
-    if(sd2 >= 24)return 99.99;
-  }
-  if(sensor == 3) {
-    double sd3 = sr3.distance();
-    if(sd3 >= 0 && sd3 < 10)  return sd3 - 0.20;
-    if(sd3 >= 10 && sd3 < 12)  return sd3 - 0.40;
-    if(sd3 >= 12 && sd3 < 14)  return sd3 - 0.90;
-    if(sd3 >= 14 && sd3 < 16)  return sd3 - 0.90;
-    if(sd3 >= 16 && sd3 < 18)  return sd3 - 1.10;
-    if(sd3 >= 18 && sd3 < 20)  return sd3 - 1.80;
-    if(sd3 >= 20 && sd3 < 22.5)  return sd3 - 1.80;
-    if(sd3 >= 22.5 && sd3 < 25)  return sd3 - 1.80;
-    if(sd3 >= 25 && sd3 < 30)  return sd3 - 2.00;
-    if(sd3 >= 30 && sd3 < 35)  return sd3 - 2.30;
-    if(sd3 >= 35)  return 99.99; //accurate up to 30cm
-  }
-  if(sensor == 4) {
-    double sd4 = sr4.distance();
-    if(sd4 >= 0 && sd4 < 10) return sd4 + 0.50;
-    if(sd4 >= 10 && sd4 < 12)  return sd4 + 0.40;
-    if(sd4 >= 12 && sd4 < 14)  return sd4 + 0.40;
-    if(sd4 >= 14 && sd4 < 16)  return sd4 + 0.30;
-    if(sd4 >= 16 && sd4 < 18)  return sd4 + 0.10;
-    if(sd4 >= 18 && sd4 < 20)  return sd4 + 0.05; 
-    if(sd4 >= 20 && sd4 < 25)  return sd4 + 0.05;
-    if(sd4 >= 25 && sd4 < 30)  return sd4 + 0.05;
-    if(sd4 >= 30) return 99.99;
-  }
-  if(sensor == 5) {
-    double sd5 = lr5.distance();
-    if(sd5 >= 0 && sd5 < 19) return 0;
-    if(sd5 >= 19 && sd5 < 22)  return sd5 + 1.00;
-    if(sd5 >= 22 && sd5 < 24)  return sd5 + 2.43;
-    if(sd5 >= 24 && sd5 < 26)  return sd5 + 3.03;
-    if(sd5 >= 26 && sd5 < 28)  return sd5 + 3.54;
-    if(sd5 >= 28 && sd5 < 30)  return sd5 + 4.00;
-    if(sd5 >= 30 && sd5 < 35)  return sd5 + 4.50;
-    if(sd5 >= 35 && sd5 < 40)  return sd5 + 4.00;
-    if(sd5 >= 40 && sd5 < 45)  return sd5 + 5.00;
-    if(sd5 >= 45 && sd5 < 50)  return sd5 + 3.30; 
-    if(sd5 >= 50 && sd5 < 55)  return sd5 + 4.30; 
-    if(sd5 >= 55 && sd5 < 60)  return sd5 + 4.30; //accurate up to 60cm
-    if(sd5 >= 60)  return 99.99;
-  }
-  if(sensor == 6) {
-    double sd6 = sr6.distance();
-    if(sd6 >= 0 && sd6 < 10) return sd6;
-    if(sd6 >= 10 && sd6 < 12)  return sd6 + 0.00;
-    if(sd6 >= 12 && sd6 < 14)  return sd6 + 0.00;
-    if(sd6 >= 14 && sd6 < 16)  return sd6 - 0.30;
-    if(sd6 >= 16 && sd6 < 18)  return sd6 - 0.60;
-    if(sd6 >= 18 && sd6 < 20)  return sd6 - 1.00; 
-    if(sd6 >= 20 && sd6 < 25)  return sd6 - 1.20; 
-    if(sd6 >= 25 && sd6 < 30)  return sd6 - 1.80; 
-    if(sd6 >= 30) return 99.99;
-  }
+  return 99.99;
 }
 
 // get distance in grids for single reading
@@ -547,16 +558,16 @@ int getGridsFromDistanceShort(double distance) {
 // Aggregate continuous sensor readings and get grids once
 int aggregateContinuousShortSensorGrids(int sensor){
   int sum = 0;
-  for(int i = 0; i < 10; i++){
+  for(int i = 0; i < NUM_SAMPLES; i++){
     sum += getDistance(sensor);
   }
-  return getGridsFromDistanceShort(sum/10);
+  return getGridsFromDistanceShort(sum/NUM_SAMPLES);
 }
 
 // Aggregate get grids to find majority case
 int aggregateDiscreteShortSensorGrids(int sensor){
   int readings[] = {0,0,0,0};
-  for(int i = 0; i < 10; i++){
+  for(int i = 0; i < NUM_SAMPLES; i++){
     readings[getGridsFromDistanceShort(getDistance(sensor))] += 1;
   }
   int majority = 0;
@@ -594,16 +605,16 @@ int getGridsFromDistanceLong(double distance) {
 // Aggregate continuous sensor readings and get grids once
 int aggregateContinuousLongSensorGrids(int sensor){
     int sum = 0;
-  for(int i = 0; i < 10; i++){
+  for(int i = 0; i < NUM_SAMPLES; i++){
     sum += getDistance(sensor);
   }
-  return getGridsFromDistanceLong(sum/10);
+  return getGridsFromDistanceLong(sum/NUM_SAMPLES);
 }
 
 // Aggregate get grids to find majority case
 int aggregateDiscreteLongSensorGrids(int sensor){
   int readings[] = {0,0,0,0,0,0};
-  for(int i = 0; i < 10; i++){
+  for(int i = 0; i < NUM_SAMPLES; i++){
     readings[getGridsFromDistanceLong(getDistance(sensor))] += 1;
   }
   int majority = 0;
@@ -650,41 +661,57 @@ String averageFrontErrorDiscreteReadings(){
   int FLarr[] = {0,0,0,0};
   int FCarr[] = {0,0,0,0};
   int FRarr[] = {0,0,0,0};
+  int FLread[NUM_SAMPLES] = {};
+  int FCread[NUM_SAMPLES] = {};
+  int FRread[NUM_SAMPLES] = {};
   int frontAverageError = 0;
   double frontLeft, frontCenter, frontRight = 0;
   int count = 0;
-  double measurement;
-  for(int i = 0; i < 10; i++){
-    count = 0;
-    frontAverageError = 0;
+  double measurement = 0;
+  double modmeasurement = 0;
+  for(int i = 0; i < NUM_SAMPLES; i++){
     measurement = getDistance(FRONT_LEFT_SENSOR);
     if(measurement < 90){
-      frontAverageError += fmod(measurement, 10) < 5? fmod(measurement, 10):fmod(measurement, 10)-10;
+      modmeasurement = fmod(measurement, 10);
+      if(modmeasurement < 5){
+        frontAverageError += modmeasurement;
+        FLread[i] = (int)(measurement-modmeasurement);
+      }else{
+        frontAverageError += modmeasurement - 10;
+        FLread[i] = (int)(measurement-modmeasurement) + 10;
+      }
       count += 1;
     }
     measurement = getDistance(FRONT_MIDDLE_SENSOR);
     if(measurement < 90){
-      frontAverageError += fmod(measurement, 10) < 5? fmod(measurement, 10):fmod(measurement, 10)-10;
+      modmeasurement = fmod(measurement, 10);
+      if(modmeasurement < 5){
+        frontAverageError += modmeasurement;
+        FCread[i] = (int)(measurement-modmeasurement);
+      }else{
+        frontAverageError += modmeasurement - 10;
+        FCread[i] = (int)(measurement-modmeasurement) + 10;
+      }
       count += 1;
     }
     measurement = getDistance(FRONT_RIGHT_SENSOR);
     if(measurement < 90){
-      frontAverageError += fmod(measurement, 10) < 5? fmod(measurement, 10):fmod(measurement, 10)-10;
+      modmeasurement = fmod(measurement, 10);
+      if(modmeasurement < 5){
+        frontAverageError += modmeasurement;
+        FRread[i] = (int)(measurement-modmeasurement);
+      }else{
+        frontAverageError += modmeasurement - 10;
+        FRread[i] = (int)(measurement-modmeasurement) + 10;
+      }
       count += 1;
     }
-    frontAverageError /= count;
-    frontLeft = fmod(getDistance(FRONT_LEFT_SENSOR),10) < 5?
-    (((int)getDistance(FRONT_LEFT_SENSOR)) / 10 * 10) + frontAverageError:
-    (((int)getDistance(FRONT_LEFT_SENSOR)) / 10 * 10) + 10 + frontAverageError;
-    frontCenter = fmod(getDistance(FRONT_MIDDLE_SENSOR),10) < 5?
-    (((int)getDistance(FRONT_MIDDLE_SENSOR)) / 10 * 10) + frontAverageError:
-    (((int)getDistance(FRONT_MIDDLE_SENSOR)) / 10 * 10) + 10 + frontAverageError;
-    frontRight = fmod(getDistance(FRONT_RIGHT_SENSOR),10) < 5?
-    (((int)getDistance(FRONT_RIGHT_SENSOR)) / 10 * 10) + frontAverageError:
-    (((int)getDistance(FRONT_RIGHT_SENSOR)) / 10 * 10) + 10 + frontAverageError;
-    FLarr[getGridsFromDistanceShort(frontLeft)] += 1;
-    FCarr[getGridsFromDistanceShort(frontCenter)] += 1;
-    FRarr[getGridsFromDistanceShort(frontRight)] += 1;
+  }
+  frontAverageError /= count;
+  for(int i = 0; i < NUM_SAMPLES; i++){
+    FLarr[getGridsFromDistanceShort(FLread[i]+frontAverageError)] += 1;
+    FCarr[getGridsFromDistanceShort(FCread[i]+frontAverageError)] += 1;
+    FRarr[getGridsFromDistanceShort(FRread[i]+frontAverageError)] += 1;
   }
   int maxFL = 0;
   int maxFC = 0;
@@ -713,8 +740,8 @@ String averageFrontErrorDiscreteReadings(){
 String averageFrontErrorReadings(){
   double frontAverageError = 0;
   int count = 0;
-  double measurement;
-  for(int i = 0; i < 10; i++){
+  double measurement = 0;
+  for(int i = 0; i < NUM_SAMPLES; i++){
     measurement = getDistance(FRONT_LEFT_SENSOR);
     if(measurement < 90){
       frontAverageError += fmod(measurement, 10) < 5? fmod(measurement, 10):fmod(measurement, 10)-10;
@@ -790,7 +817,7 @@ void calSensors(float error) {
 }
 
 void calAngle(float MIN_DISTANCE_CALIBRATE) {
-  float leftToWallDistance, rightToWallDistance;
+  float leftToWallDistance, rightToWallDistance = 0;
   int count = 0;
   float error;
   float forward = 0;
@@ -904,168 +931,3 @@ void calibrate(float MIN_DISTANCE_CALIBRATE) {
   delay(10);
   calAngle(MIN_DISTANCE_CALIBRATE);
 }
-
-// ==============================   Miscellaneous/Obsolete/Testing Functions  ==============================
-  /*
-  switch(packet) {
-    case '0':
-      restartPID();
-      while(true) {
-        moveForward();
-        Serial.print(input_MR); Serial.print(", R  ||  ");
-        Serial.print(input_ML); Serial.print(", L\n");
-      }
-      break; 
-    case '1':
-      goStraightInGrids(1);
-      restartPID();
-      break;
-    case '2':
-      goStraightInGrids(2);
-      restartPID();
-      break;
-    case 's':
-      while(true) {
-        Serial.print(getDistance(1)); Serial.print("<-- FL | ");
-        Serial.print(getDistance(2)); Serial.print("<-- FC | ");
-        Serial.print(getDistance(3)); Serial.print("<-- FR | ");
-        Serial.print(getDistance(4)); Serial.print("<-- LS | ");
-        Serial.print(getDistance(5)); Serial.print("<-- LL | ");
-        Serial.print(getDistance(6)); Serial.print("<-- RS\n");
-        //delay(500);
-      }
-      break;
-    case 'g':
-      while(true) {
-        Serial.print(getDistanceInGrids(1)); Serial.print("<-- FL | ");
-        Serial.print(getDistanceInGrids(2)); Serial.print("<-- FC | ");
-        Serial.print(getDistanceInGrids(3)); Serial.print("<-- FR | ");
-        Serial.print(getDistanceInGrids(4)); Serial.print("<-- LS | ");
-        Serial.print(getDistanceInGrids(5)); Serial.print("<-- LL | ");
-        Serial.print(getDistanceInGrids(6)); Serial.print("<-- RS\n");
-        //delay(1000);
-      }
-      break;
-    case 'l':
-      rotateLeft(1);
-      restartPID();
-      break;
-    case 'r':
-      rotateRight(1);
-      restartPID();
-      break;
-    case 'q':
-      while(true) {
-        Serial.print(sr1.distance()); Serial.print("<-- FL | ");
-        Serial.print(sr2.distance()); Serial.print("<-- FC | ");
-        Serial.print(sr3.distance()); Serial.print("<-- FR | ");
-        Serial.print(sr4.distance()); Serial.print("<-- LS | ");
-        Serial.print(lr5.distance()); Serial.print("<-- LL | ");
-        Serial.print(sr6.distance()); Serial.print("<-- RS\n");
-        //delay(1000);
-      }
-    case 'e':
-      restartPID();
-      explore();
-      break;
-    case 'f':
-      restartPID();
-      explore2();
-      break;
-    case 'c':
-      calibrate(MIN_DISTANCE_CALIBRATE);
-      delay(150);
-      break;
-    default:
-      break;  
-  }*/
-
-/*
-void explore() {
-  for(int i = 0; i < 500; i++) {
-    moveForward();
-    Serial.print(i); Serial.print("\n");
-    //Serial.print(input_MR); Serial.print(", R  ||  ");
-    //Serial.print(input_ML); Serial.print(", L  ||  ");
-    //Serial.print(getDistanceInGrids(1)); Serial.print("<-- FL | ");
-    //Serial.print(getDistanceInGrids(2)); Serial.print("<-- FC | ");
-    //Serial.print(getDistanceInGrids(3)); Serial.print("<-- FR\n");
-  }
-
-  while(true) {
-    moveForward();
-    if((getDistanceInGrids(1) == "1") || (getDistanceInGrids(2) == "1") || (getDistanceInGrids(3) == "1")) {
-      md.setBrakes(400, 400);
-      delay(500);
-      rotateLeft(1);        
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateRight(1);       
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(4); 
-      delay(500);
-      rotateRight(1);
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateLeft(1);        restartPID();
-      delay(1000);
-      break;     
-    }
-  }
-
-  goStraightInGrids(2);
-  restartPID();
-}
-
-void explore2() {
-  for(int i = 0; i < 500; i++) {
-    moveForward();
-    Serial.print(i); Serial.print("\n");
-    //Serial.print(input_MR); Serial.print(", R  ||  ");
-    //Serial.print(input_ML); Serial.print(", L  ||  ");
-    //Serial.print(getDistanceInGrids(1)); Serial.print("<-- FL | ");
-    //Serial.print(getDistanceInGrids(2)); Serial.print("<-- FC | ");
-    //Serial.print(getDistanceInGrids(3)); Serial.print("<-- FR\n");
-  }
-
-  while(true) {
-    moveForward();
-    if((getDistanceInGrids(1) == "2") || (getDistanceInGrids(2) == "2") || (getDistanceInGrids(3) == "2")) {
-      md.setBrakes(400, 400);
-      delay(500);
-      rotateLeft(0.5);        
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateRight(0.5);       
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(4); 
-      delay(500);
-      rotateRight(0.5);
-      delay(500);
-      restartPID();
-      delay(500);
-      goStraightInGrids(3); 
-      delay(500);
-      rotateLeft(0.5);        restartPID();
-      delay(1000);
-      break;     
-    }
-  }
-
-  goStraightInGrids(2);
-  restartPID();
-}
-*/
