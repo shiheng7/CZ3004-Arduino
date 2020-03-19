@@ -248,10 +248,10 @@ String checkFastestCommands(String fastestString) {
     }
     else {
       fastestString.remove(0, loop);
-      break;
+      return fastestString;
     }
   }
-  return fastestString;
+  return "";
 }
 
 void readFastestCommands(String fastestString) {
