@@ -43,7 +43,7 @@ double prev_prev_error_MR = 0, prev_prev_error_ML = 0;
 double total_Dis = 0;
 
 // ==============================   User Input Variables  ==============================
-float kp_MR = 0.115;
+float kp_MR = 0.085;
 float ki_MR = 0.380;
 float kd_MR = 0.160;
 float kp_ML = 0.110;
@@ -52,11 +52,11 @@ float kd_ML = 0.014;
 double setpoint = 80;
 double setpoint_RT = 80;
 
-float MIN_DISTANCE_CALIBRATE = 8.9;
+float MIN_DISTANCE_CALIBRATE = 9.1;
 float ANGLE_CALIBRATION_THRESHOLD = 0.05;
-float LEFT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.2, MIN_DISTANCE_CALIBRATE + 0.2};  // calDistance()
-float RIGHT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.2, MIN_DISTANCE_CALIBRATE + 0.2}; // calDistance()
-float FRONT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.2, MIN_DISTANCE_CALIBRATE + 0.2}; // calDistanceFront()
+float LEFT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.1, MIN_DISTANCE_CALIBRATE + 0.1};  // calDistance()
+float RIGHT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.1, MIN_DISTANCE_CALIBRATE + 0.1}; // calDistance()
+float FRONT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.1, MIN_DISTANCE_CALIBRATE + 0.1}; // calDistanceFront()
 const int AVERAGE_FRONT = 0;
 const int AVERAGE_READINGS = 1;
 const int AVERAGE_DISCRETE = 2;
@@ -81,7 +81,7 @@ void setup() {
 
   PCintPort::attachInterrupt(motor_encoder_R, countPulse_MR, RISING);
   PCintPort::attachInterrupt(motor_encoder_L, countPulse_ML, RISING);
-  
+
   Serial.flush();
 }
 
@@ -264,24 +264,24 @@ void readFastestCommands(String fastestString) {
     restartPID();
     switch(func) {
       case 'L':
-        rotateLeft();
-        delay(125);
+        rotateLeftFast();
+        delay(70);
         restartPID();
         break;
       case 'R':
-        rotateRight();
-        delay(125);
+        rotateRightFast();
+        delay(70);
         restartPID();
         break;
       default:
         int hexChar = int(func);
         if(hexChar >= 48 && hexChar <= 57){
-          goStraightInGrids(hexChar - 48);
-          delay(125);
+          goStraightInGridsFast(hexChar - 48);
+          delay(70);
           restartPID();
         }else if(hexChar >= 65 && hexChar <= 70){
-          goStraightInGrids(hexChar - 55);
-          delay(125);
+          goStraightInGridsFast(hexChar - 55);
+          delay(70);
           restartPID();
         }
         break;
@@ -296,7 +296,23 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 10550; 
+  long distance = grids * 10500; 
+  while(true) {
+    if (total_Dis >= distance) {
+      total_Dis = 0;
+      md.setBrakes(400, 400);
+      break;
+    }else {
+      moveForward();
+      //Serial.print(input_MR); Serial.print(", R  ||  ");
+      //Serial.print(input_ML); Serial.print(", L\n");
+      total_Dis = total_Dis + input_ML + input_MR;
+    }
+  }
+}
+
+void goStraightInGridsFast(long grids) {
+  long distance = grids * 11175; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -313,7 +329,7 @@ void goStraightInGrids(long grids) {
 
 // new shit
 void goBackInGrids(long grids) {
-  long distance = grids * 10500; 
+  long distance = grids * 10100; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -329,7 +345,7 @@ void goBackInGrids(long grids) {
 }
 
 void rotateLeft() {
-  long limit = 13850;
+  long limit = 13750;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -348,7 +364,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 13875;
+  long limit = 13825;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -366,6 +382,43 @@ void rotateRight() {
   }
 }
 
+void rotateLeftFast() {
+  long limit = 14050;
+  while(true) {
+    if (total_Dis >= limit) {
+      total_Dis = 0;
+      md.setBrakes(400, 400);
+      break;
+    }
+    else {
+      pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint_RT);
+      md.setSpeeds(pidOutput_MR * 150, pidOutput_ML * 150);
+      delayMicroseconds(5000);
+      //Serial.print(input_MR); Serial.print(", R  ||  ");
+      //Serial.print(input_ML); Serial.print(", L\n");
+      total_Dis = total_Dis + input_ML + input_MR;
+    }
+  }
+}
+
+void rotateRightFast() {
+  long limit = 14150;
+  while(true) {
+    if (total_Dis >= limit) {
+      total_Dis = 0;
+      md.setBrakes(400, 400);
+      break;
+    }
+    else {
+      pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint_RT);
+      md.setSpeeds(-pidOutput_MR * 150, -pidOutput_ML * 150);
+      delayMicroseconds(5000);
+      //Serial.print(input_MR); Serial.print(", R  ||  ");
+      //Serial.print(input_ML); Serial.print(", L\n");
+      total_Dis = total_Dis + input_ML + input_MR;
+    }
+  }
+}
 // ==============================   Motor Functions   ==============================
 void countPulse_MR() {
   counter_MR++;
