@@ -296,7 +296,7 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 11500; 
+  long distance = grids * 11000; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -364,7 +364,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 13825;
+  long limit = 13820;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
