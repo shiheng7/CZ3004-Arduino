@@ -296,7 +296,7 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 10500; 
+  long distance = grids * 11500; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
