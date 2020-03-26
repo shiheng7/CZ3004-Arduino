@@ -52,11 +52,11 @@ float kd_ML = 0.014;
 double setpoint = 80;
 double setpoint_RT = 80;
 
-float MIN_DISTANCE_CALIBRATE = 9.1;
+float MIN_DISTANCE_CALIBRATE = 10.0;
 float ANGLE_CALIBRATION_THRESHOLD = 0.05;
-float LEFT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.1, MIN_DISTANCE_CALIBRATE + 0.1};  // calDistance()
-float RIGHT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.1, MIN_DISTANCE_CALIBRATE + 0.1}; // calDistance()
-float FRONT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.1, MIN_DISTANCE_CALIBRATE + 0.1}; // calDistanceFront()
+float LEFT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.05, MIN_DISTANCE_CALIBRATE + 0.05};  // calDistance()
+float RIGHT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.05, MIN_DISTANCE_CALIBRATE + 0.05}; // calDistance()
+float FRONT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.05, MIN_DISTANCE_CALIBRATE + 0.05}; // calDistanceFront()
 const int AVERAGE_FRONT = 0;
 const int AVERAGE_READINGS = 1;
 const int AVERAGE_DISCRETE = 2;
@@ -296,7 +296,7 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 11000; 
+  long distance = grids * 10800; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -364,7 +364,7 @@ void rotateLeft() {
 }
 
 void rotateRight() {
-  long limit = 13820;
+  long limit = 13785;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
@@ -648,10 +648,10 @@ String getShortSensorString(int reading){
 // get distance in grids for single reading
 int getGridsFromDistanceLong(double distance) {  
   if(distance >= 0 && distance <= 24) return 1; // Actually x
-    else if(distance > 24 && distance <= 34) return 2; // Actually 2
-    else if(distance > 34 && distance <= 44) return 3; // Actually 3
-    else if(distance > 44 && distance <= 54) return 4; // Actually 4
-    else if(distance > 54 && distance <= 64) return 5; // Actually 5
+    else if(distance > 23 && distance <= 33) return 2; // Actually 2
+    else if(distance > 33 && distance <= 43) return 3; // Actually 3
+    else if(distance > 43 && distance <= 53) return 4; // Actually 4
+    else if(distance > 53 && distance <= 63) return 5; // Actually 5
     else return 0; // Actually x
 }
 
@@ -858,13 +858,13 @@ void calSensors(float error) {
   //if the robot is tilted to the left -> need to turn right
   if(error > ANGLE_CALIBRATION_THRESHOLD) {
     md.setSpeeds(-100, -100);
-    delay(abs(error * 50));
+    delay(abs(error * 40));
     md.setBrakes(400,400);
   }
   //if the robot is tilted to the right -> need to turn left 
   else if(error < -ANGLE_CALIBRATION_THRESHOLD) {
     md.setSpeeds(100, 100);
-    delay(abs(error * 50));
+    delay(abs(error * 40));
     md.setBrakes(400, 400);    
   }
 }
@@ -887,7 +887,7 @@ void calAngle(float MIN_DISTANCE_CALIBRATE) {
     while(leftToWallDistance > MIN_DISTANCE_CALIBRATE && rightToWallDistance > MIN_DISTANCE_CALIBRATE){
       forward = leftToWallDistance < rightToWallDistance? (leftToWallDistance - MIN_DISTANCE_CALIBRATE) : (rightToWallDistance - MIN_DISTANCE_CALIBRATE);
       md.setSpeeds(75, -75);
-      delay(abs(forward) * 250);
+      delay(abs(forward) * 200);
       md.setBrakes(400, 400);
       leftToWallDistance = getDistance(1);
       rightToWallDistance = getDistance(3);
@@ -896,7 +896,7 @@ void calAngle(float MIN_DISTANCE_CALIBRATE) {
     //force a reverse because the robot is too near
     if(leftToWallDistance < MIN_DISTANCE_CALIBRATE && rightToWallDistance < MIN_DISTANCE_CALIBRATE) {
       md.setSpeeds(-75, 75);
-      delay(abs(error) * 250);
+      delay(abs(error) * 200);
       md.setBrakes(400, 400);
     }
 
@@ -928,7 +928,7 @@ void calDistance(float MIN_DISTANCE_CALIBRATE) {
         leftToWallDistance < LEFT_TO_WALL_DISTANCE_THRESHOLD[0]) {
       //reverse normally
       md.setSpeeds(-200, 200);
-      delay(abs(error) * 40);  //100
+      delay(abs(error) * 20);  //100
       md.setBrakes(400, 400);
     }
     else {  
@@ -936,7 +936,7 @@ void calDistance(float MIN_DISTANCE_CALIBRATE) {
       //moveForward(100,0.9);
       // Serial.println("Moving forwards");
       md.setSpeeds(200, -200);
-      delay(abs(error) * 40);    //100
+      delay(abs(error) * 20);    //100
       md.setBrakes(400, 400);
     }
   }
