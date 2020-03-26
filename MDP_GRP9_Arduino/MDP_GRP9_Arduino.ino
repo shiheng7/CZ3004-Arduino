@@ -52,7 +52,7 @@ float kd_ML = 0.014;
 double setpoint = 80;
 double setpoint_RT = 80;
 
-float MIN_DISTANCE_CALIBRATE = 10.0;
+float MIN_DISTANCE_CALIBRATE = 9.5;
 float ANGLE_CALIBRATION_THRESHOLD = 0.05;
 float LEFT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.05, MIN_DISTANCE_CALIBRATE + 0.05};  // calDistance()
 float RIGHT_TO_WALL_DISTANCE_THRESHOLD[2] = {MIN_DISTANCE_CALIBRATE - 0.05, MIN_DISTANCE_CALIBRATE + 0.05}; // calDistance()
@@ -296,7 +296,7 @@ void wait(unsigned long milliseconds) {
 
 // ==============================   Movement Functions  ==============================
 void goStraightInGrids(long grids) {
-  long distance = grids * 10800; 
+  long distance = grids * 10980; 
   while(true) {
     if (total_Dis >= distance) {
       total_Dis = 0;
@@ -345,7 +345,7 @@ void goBackInGrids(long grids) {
 }
 
 void rotateLeft() {
-  long limit = 13750;
+  long limit = 13775;
   while(true) {
     if (total_Dis >= limit) {
       total_Dis = 0;
