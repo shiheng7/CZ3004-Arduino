@@ -111,7 +111,6 @@ void loop() {
 
 // ==============================   Main Functions  ==============================
 void readExploreCommands(char func) {
-  //new shit
   restartPID();
   switch(func) {
     case 'L':
@@ -198,7 +197,6 @@ void readCalibrateCommands(String calibrateString) {
 
   for(int loop = 0; loop < stringLength; loop++) {
     func = calibrateString.charAt(loop);
-    //new shit
     restartPID();
     switch(func) {
       case 'L':
@@ -228,7 +226,6 @@ String checkFastestCommands(String fastestString) {
   
   for(int loop = 0; loop < stringLength; loop++) {
     func = fastestString.charAt(loop);
-    //new shit
     restartPID();
     if(func == 'L' || func == 'R') {
       switch(func) {
@@ -260,7 +257,6 @@ void readFastestCommands(String fastestString) {
 
   for(int loop = 0; loop < stringLength; loop++) {
     func = fastestString.charAt(loop);
-    //new shit
     restartPID();
     switch(func) {
       case 'L':
@@ -327,7 +323,6 @@ void goStraightInGridsFast(long grids) {
   }
 }
 
-// new shit
 void goBackInGrids(long grids) {
   long distance = grids * 10100; 
   while(true) {
@@ -496,7 +491,6 @@ void moveForwardSlow() {
   delayMicroseconds(5000);
 }
 
-// new shit
 void moveBackward() {
   pidCalculation(kp_MR, ki_MR, kd_MR, kp_ML, ki_ML, kd_ML, setpoint);
   md.setSpeeds(-pidOutput_MR * 150, pidOutput_ML * 150);
